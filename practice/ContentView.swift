@@ -6,61 +6,60 @@
 //
 
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
+    
+    let choices = ["가위", "바위", "보"]
+    
+    @State var computer = "?"
+    @State var result = "선택하세요!"
+    
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
+        VStack(spacing: 30) {
+            
+            Text("컴퓨터 : \(computer)")
+                .font(.largeTitle)
+            
+            HStack {
+                Button("가위") {
+                    play(user: "가위")
                 }
-                .onDelete(perform: deleteItems)
-            }
-#if os(macOS)
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-#endif
-            .toolbar {
-#if os(iOS)
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                
+                Button("바위") {
+                    play(user: "바위")
                 }
-#endif
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+                
+                Button("보") {
+                    play(user: "보")
                 }
             }
-        } detail: {
-            Text("Select an item")
+            .font(.title)
+            
+            Text("결과 : \(result)")
+                .font(.title2)
+            
         }
+        .padding()
     }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+    
+    func play(user: String) {
+        
+        computer = choices.randomElement()!
+        
+        if user == computer {
+            result = "무승부"
         }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+        else if (user == "가위" && computer == "보") ||
+                (user == "바위" && computer == "가위") ||
+                (user == "보" && computer == "바위") {
+            result = "승리!"
+        }
+        else {
+            result = "패배!"
         }
     }
 }
 
 #Preview {
     ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
 }
