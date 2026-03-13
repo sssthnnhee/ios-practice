@@ -21,15 +21,15 @@ struct ContentView: View {
                 .font(.largeTitle)
             
             HStack {
-                Button("가위") {
+                Button("✌️") {
                     play(user: "가위")
                 }
                 
-                Button("바위") {
+                Button("✊") {
                     play(user: "바위")
                 }
                 
-                Button("보") {
+                Button("✋") {
                     play(user: "보")
                 }
             }
